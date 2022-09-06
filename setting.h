@@ -1,0 +1,85 @@
+#ifndef SETTING_H
+#define SETTING_H
+
+#define MIN_WINDOW_WIDTH 438
+#define MIN_WINDOW_HEIGHT 512
+
+#define MAX_WINDOW_WIDTH 558
+#define MAX_WINDOW_HEIGHT 632
+
+#define SIZE_BOARD 3 // 3х3
+
+#define ALL_GROUPS 2
+#define GROUP_OBJECT 1
+
+#include <QDebug>
+#include <QRandomGenerator>
+
+
+
+enum WIDGETS{
+    GAME,
+    MENU
+};
+enum PLAYERS {
+    PLAYER,
+    AI,
+    INVOLVED = 2,
+    UNDEFINED_PLAYER
+};
+enum FIGURE {
+    CIRCLE, // круг
+    CROSS, // крест
+    UNDEFINED_SHAPE
+};
+
+enum DELETE {
+    MARKUP,
+    GRAPHICS_BOARD,
+    DATA_BOARD
+};
+enum ERRORS {
+    SCENE_NOT_DEFINED = 10000, // Сцена не определена.
+    SHAPE_NOT_DEFINED,
+    FAILED_TO_DRAW_SHAPE,
+    ROW_AND_COLUMN_DEFINED_INCORRECTLY,
+    NO,
+    UNDEFINED_CLASS_CONSTRUCTOR,
+    OBJECT_INITIALL_START_GAME = 11000
+};
+
+enum SECTIONS {
+    FIRST,
+    SECOND,
+    THIRD,
+    FOURTH,
+    FIFTH,
+    SIXTH,
+    SEVENTH,
+    EIGHTH,
+    NINTH,
+    UNDEFINED
+};
+
+enum COLUMN{
+    FIRST_COLUMN,
+    TWO_COLUMN,
+    THREE_COLUMN,
+    UNDEFINED_COLUMN
+};
+enum ROWS{
+    FIRST_ROW,
+    TWO_ROW,
+    THREE_ROW,
+    UNDEFINED_ROW,
+};
+
+struct Moves
+{
+  PLAYERS plType = UNDEFINED_PLAYER;
+  SECTIONS id = UNDEFINED;
+  FIGURE shape = UNDEFINED_SHAPE;
+};
+
+
+#endif // SETTING_H
