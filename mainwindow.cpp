@@ -35,7 +35,6 @@ bool winning(Matrix<Moves, SIZE_BOARD> &board, PLAYERS player)
             (board.at(0).plType == player && board.at(4).plType == player && board.at(8).plType == player)||
             (board.at(2).plType == player && board.at(4).plType == player && board.at(6).plType == player))
     {
-        qDebug() << "Победа: " << player;
         return true;
     }
     else
@@ -64,13 +63,70 @@ int score(Matrix<Moves, SIZE_BOARD> newBoard)
     else
         return 0;
 }
-SECTIONS AI_Move(Matrix<Moves, SIZE_BOARD> &board){
-    return FIRST;
+
+int minimax(Matrix<Moves, SIZE_BOARD> &newBoard, PLAYERS currentPlayer, SECTIONS *bestMove = nullptr)
+{
+    const int PLAYER_WIN = 10;
+    const int AI_WIN = -10;
+    /*Если выиграно или проиграно*/
+    int result = score(newBoard);
+    if(result == PLAYER_WIN || result == AI_WIN)
+        return result;
+
+    /*Если больше нет ходов*/
+    auto possibleMoves = emptyID(newBoard);
+    if(possibleMoves.empty())
+        return result;
+
+    int currentScore = currentPlayer == PLAYERS::AI ? PLAYER_WIN+1 : AI_WIN-1; // Начальные значения на 1 хуже поражения
+    for(auto &move : possibleMoves) // Перебираем все возможные ходы
+    {
+        //Делаем ход
+        newBoard.at(move) = {currentPlayer, SECTIONS(move), UNDEFINED_SHAPE};
+
+        if(currentPlayer == PLAYERS::PLAYER)
+        {
+            int result = minimax(newBoard, PLAYERS::AI); //Вызываем рекурсивно для следующего игрока
+
+            if(result > currentScore) //Если результат лучше текущего
+            {
+                currentScore = result; //Обновляем текущий
+
+                if(bestMove) //Если мы в корне: сохраним ход, как лучший
+                    *bestMove = SECTIONS(move);
+            }
+        }
+        else
+        {
+            if(currentPlayer == PLAYERS::AI)
+            {
+                int result = minimax(newBoard, PLAYERS::PLAYER);  //Вызываем рекурсивно для следующего игрока
+
+                if(result < currentScore)//Если результат лучше текущего
+                {
+                    currentScore = result;//Обновляем текущий
+
+                    if(bestMove)//Если мы в корне: сохраним ход, как лучший
+                        *bestMove = SECTIONS(move);
+                }
+            }
+        }
+
+        //Убираем ход
+        newBoard.at(move) = {PLAYERS::UNDEFINED_PLAYER, UNDEFINED, UNDEFINED_SHAPE};
+    }
+
+    return currentScore;
 }
 
-int minimax(Matrix<Moves, SIZE_BOARD> newBoard, Moves p)
+SECTIONS AI_Move(Matrix<Moves, SIZE_BOARD> &board)
 {
+        Matrix<Moves, SIZE_BOARD> localBoard = board;
+        SECTIONS bestMove = SECTIONS::UNDEFINED;
+        PLAYERS currentPlayer = PLAYERS::AI;
+        minimax(localBoard, currentPlayer, &bestMove);
 
+        return bestMove;
 }
 void MainWindow::setting()
 {
