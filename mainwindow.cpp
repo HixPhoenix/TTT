@@ -121,12 +121,12 @@ int minimax(Matrix<Moves, SIZE_BOARD> &newBoard, PLAYERS currentPlayer, SECTIONS
 
 SECTIONS AI_Move(Matrix<Moves, SIZE_BOARD> &board)
 {
-        Matrix<Moves, SIZE_BOARD> localBoard = board;
-        SECTIONS bestMove = SECTIONS::UNDEFINED;
-        PLAYERS currentPlayer = PLAYERS::AI;
-        minimax(localBoard, currentPlayer, &bestMove);
+    Matrix<Moves, SIZE_BOARD> localBoard = board;
+    SECTIONS bestMove = SECTIONS::UNDEFINED;
+    PLAYERS currentPlayer = PLAYERS::AI;
+    minimax(localBoard, currentPlayer, &bestMove);
 
-        return bestMove;
+    return bestMove;
 }
 void MainWindow::setting()
 {
@@ -160,9 +160,6 @@ void Playground::update()
         _scene->update();
     else
         qDebug() << "ERROR: " << ERRORS::SCENE_NOT_DEFINED;
-
-    qDebug() << groupShapes->childItems();
-
 }
 
 Playground::Playground(QWidget *parent)
@@ -211,11 +208,6 @@ bool Playground::clear(const DELETE variant)
     case GRAPHICS_BOARD:
         return clear(groupShapes);
     case DATA_BOARD:
-        //        if(_board)
-        //            for(int i = 0; i <= SECTIONS::NINTH; i++)
-        //                if(_board->at(i).id != UNDEFINED)
-        //                    _board->at(i).clear();
-
         return true;
         ;
     }
@@ -328,23 +320,31 @@ void Playground::mousePressEvent(QMouseEvent *event)
             player = {PLAYER, s, player.shape == CROSS ? CIRCLE : CROSS};
             _board.at(s) = player;
             draw(new Shapes(_board.at(s).shape, Pos(width(), height(), s)));
+
+            if(winning(_board, PLAYER)){
+                qDebug() << "Победа Игрока!";
+                return;
+            }
         }
         // Если игрок не выиграл после своего хода - ход предоставляется компьютеру.
-        if(!winning(_board, PLAYER)){
-            //Ход компьютера:
+
+        if(!emptyID(_board).empty()){
             SECTIONS sAI = AI_Move(_board);
             if(_board.at(sAI).id == UNDEFINED){
                 player = {AI, sAI, player.shape == CROSS ? CIRCLE : CROSS};
                 _board.at(sAI) = player;
                 draw(new Shapes(_board.at(sAI).shape, Pos(width(), height(), sAI)));
-                // Проверка на выигрыш хода компьютера.
-                winning(_board, AI);
+
+                if(winning(_board, AI)){
+                    qDebug() << "Победа Компьютера!";
+                    return;
+                }
             }
         }
-
+        else{
+            qDebug() << "Ничья!";
+        }
     }
-
-
 
     update();
 }
